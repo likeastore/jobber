@@ -7,5 +7,16 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "alexander.beletsky@gmail.com",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "~1.10.0",
+    "chai": "~1.6.1",
+    "sinon-chai": "~2.4.0",
+    "request": "~2.21.0"
+  },
+  "dependencies": {
+    "mongojs": "~0.10.1",
+    "redis": "~0.10.1",
+    "hiredis": "~0.1.16"
+  }
 }
