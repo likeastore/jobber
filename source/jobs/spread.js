@@ -1,4 +1,4 @@
-function spread() {
+function spread(callback) {
 
 }
 
