@@ -15,8 +15,8 @@ function nearestTimespan(interval) {
 	var current = moment();
 
 	return {
-		from: current.subtract(minutes, 'minutes'),
-		to: current
+		from: current.subtract(minutes, 'minutes').toDate(),
+		to: current.toDate()
 	};
 }
 
@@ -34,13 +34,16 @@ function pulse(interval, callback) {
 				$match: {created: {$gte: timespan.from, $lt: timespan.to}}
 			},
 			{
-				$group: {}
+				$group: {
+					_id: '$source',
+					likes: { $sum: 1 }
+				}
 			}
 		], callback);
 	}
 
 	function store(aggregated, callback) {
-		mongo.pulse.save({interval: interval, timespan: timespan, results: aggregated}, callback);
+		mongo.pulse.save({interval: interval, prepared: timespan.to, timespan: timespan, results: aggregated}, callback);
 	}
 }
 
