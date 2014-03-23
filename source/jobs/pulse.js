@@ -4,26 +4,29 @@ var config = require('../../config');
 var mongo = require('../db/mongo')(config);
 
 function nearestTimespan(interval) {
+	var current = moment().subtract(6, 'days');
 	var intervals = {
-		'half-hour': 30,
-		'hour': 60,
-		'six-hours': 360,
-		'twelve-hours': 720,
-		'day': 1440
+		'day': function () {
+			return {
+				from: moment(current).startOf('day').toDate(),
+				to: moment(current).endOf('day').toDate()
+			};
+		},
+		'week': function () {
+			return {
+				from: moment(current).startOf('week').toDate(),
+				to: moment(current).endOf('week').toDate()
+			};
+		},
+		'month': function () {
+			return {
+				from: moment(current).startOf('month').toDate(),
+				to: moment(current).endOf('month').toDate()
+			};
+		}
 	};
 
-	var minutes = intervals[interval];
-
-	if (minutes) {
-		var current = moment().subtract(5, 'days');
-		var from = moment(current).subtract(minutes, 'minutes').toDate();
-		var to = current.toDate();
-
-		return {
-			from: from,
-			to: to
-		};
-	}
+	return intervals[interval]();
 }
 
 function pulse(interval, callback) {
@@ -58,16 +61,13 @@ function pulse(interval, callback) {
 				$sort: {
 					likes: -1
 				}
-			},
-			{
-				$limit: 30
 			}
 		], callback);
 	}
 
 	function filter(aggregated, callback) {
 		var filtered = aggregated.filter(function (item) {
-			return item.likes > 1;
+			return item.likes > 2;
 		});
 
 		callback(null, filtered);
@@ -94,8 +94,19 @@ function pulse(interval, callback) {
 	}
 
 	function store(resolved, callback) {
-		callback(null, resolved);
-		//mongo.pulse.save({interval: interval, prepared: timespan.to, timespan: timespan, results: aggregated}, callback);
+		var date = formatted(interval, timespan);
+
+		mongo.pulse.update(
+			{interval: interval, date: date},
+			{interval: interval, date: date, timespan: timespan, results: resolved},
+			{upsert: true, 'new': true},
+			callback);
+	}
+
+	function formatted(interval, timespan) {
+		var date = moment(timespan.to);
+
+		return interval === 'week' ? date.startOf('week').format('YYYY-MM-DD') : date.format('YYYY-MM-DD');
 	}
 }
 
