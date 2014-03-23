@@ -68,19 +68,13 @@ function pulse(interval, callback) {
 	}
 
 	function store(resolved, callback) {
-		var date = formatted(interval, timespan);
+		var date = moment(timespan.from).format('YYYY-MM-DD');
 
 		mongo.pulse.update(
 			{interval: interval, date: date},
 			{interval: interval, date: date, timespan: timespan, results: resolved},
 			{upsert: true, 'new': true},
 			callback);
-	}
-
-	function formatted(interval, timespan) {
-		var date = moment(timespan.to);
-
-		return interval === 'week' ? date.startOf('week').format('YYYY-MM-DD') : date.format('YYYY-MM-DD');
 	}
 }
 
