@@ -44,7 +44,7 @@ function pulse(interval, callback) {
 			return item.likes > 2;
 		});
 
-		callback(null, filtered);
+		callback(null, filtered.slice(0, 50));
 	}
 
 	function resolve(filtered, callback) {
