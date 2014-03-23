@@ -1,9 +1,11 @@
 var Agenda = require('agenda');
-var pulse = require('./source/jobs/pulse');
-var logger = require('./source/utils/logger');
 var config = require('./config');
 
-var agenda = new Agenda({db: {address: config.connection, collection: 'jobs' }, maxConcurrency: 1});
+var pulse = require('./source/jobs/pulse');
+var logger = require('./source/utils/logger');
+var timing = require('./source/utils/timing');
+
+var agenda = new Agenda({db: {address: config.connection, collection: 'jobs' } });
 
 agenda.define('daily pulse', function (job, callback) {
 	pulse('day', callback);
@@ -17,20 +19,22 @@ agenda.define('month pulse', function (job, callback) {
 	pulse('month', callback);
 });
 
-agenda.every('15 minute', 'daily pulse');
-agenda.every('30 minute', 'weekly pulse');
-agenda.every('60 minute', 'month pulse');
+agenda.every('5 minute', 'daily pulse');
+agenda.every('10 minute', 'weekly pulse');
+agenda.every('15 minute', 'month pulse');
 
 agenda.on('start', function (job) {
-	logger.info({message: 'job started', job: job});
+	timing.start(job.attrs.name);
+	logger.info({message: 'job started', job: job.attrs.name});
 });
 
 agenda.on('complete', function (job) {
-	logger.success({message: 'job compeleted', job: job});
+	var duration = timing.finish(job.attrs.name);
+	logger.success({message: 'job compeleted', job: job.attrs.name, duration: duration.asSeconds().toFixed(2)});
 });
 
 agenda.on('fail', function (err, job) {
-	logger.error({message: 'job failed', job: job, err: err});
+	logger.error({message: 'job failed', job: job.attrs.name, err: err});
 });
 
 agenda.start();
