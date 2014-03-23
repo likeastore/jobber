@@ -5,7 +5,7 @@ var pulse = require('./source/jobs/pulse');
 var logger = require('./source/utils/logger');
 var timing = require('./source/utils/timing');
 
-var agenda = new Agenda({db: {address: config.connection, collection: 'jobs'}, defaultConcurrency: 1});
+var agenda = new Agenda({db: {address: config.connection, collection: 'jobs'} });
 
 agenda.define('daily pulse', function (job, callback) {
 	pulse('day', callback);
