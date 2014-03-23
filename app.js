@@ -20,9 +20,9 @@ agenda.purge(function () {
 		pulse('month', callback);
 	});
 
-	agenda.every('1 minute', 'measure pulse day');
-	agenda.every('5 minute', 'measure pulse week');
-	agenda.every('10 minutes', 'measure pulse month');
+	agenda.every('10 minutes', 'measure pulse day');
+	agenda.every('30 minutes', 'measure pulse week');
+	agenda.every('60 minutes', 'measure pulse month');
 
 	agenda.on('start', function (job) {
 		timing.start(job.attrs.name);
