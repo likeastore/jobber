@@ -68,7 +68,7 @@ function pulse(interval, callback) {
 	}
 
 	function store(resolved, callback) {
-		var date = moment(timespan.from).format('YYYY-MM-DD');
+		var date = moment().format('YYYY-MM-DD');
 
 		mongo.pulse.update(
 			{interval: interval, date: date},
@@ -79,23 +79,25 @@ function pulse(interval, callback) {
 }
 
 function nearestTimespan(interval) {
+	var current = moment();
+
 	var intervals = {
 		'day': function () {
 			return {
-				from: moment().startOf('day').toDate(),
-				to: moment().endOf('day').toDate()
+				from: moment(current).subtract('days', 1).toDate(),
+				to: moment(current).toDate()
 			};
 		},
 		'week': function () {
 			return {
-				from: moment().startOf('week').toDate(),
-				to: moment().endOf('week').toDate()
+				from: moment(current).subtract('week', 1).toDate(),
+				to: moment(current).toDate()
 			};
 		},
 		'month': function () {
 			return {
-				from: moment().startOf('month').toDate(),
-				to: moment().endOf('month').toDate()
+				from: moment(current).subtract('month', 1).toDate(),
+				to: moment(current).toDate()
 			};
 		}
 	};

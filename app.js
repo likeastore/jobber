@@ -20,8 +20,8 @@ agenda.define('month pulse', function (job, callback) {
 });
 
 agenda.every('1 minute', 'daily pulse');
-agenda.every('2 minute', 'weekly pulse');
-agenda.every('3 minute', 'month pulse');
+agenda.every('1 minute', 'weekly pulse');
+agenda.every('1 minute', 'month pulse');
 
 agenda.on('start', function (job) {
 	timing.start(job.attrs.name);
@@ -30,7 +30,7 @@ agenda.on('start', function (job) {
 
 agenda.on('complete', function (job) {
 	var duration = timing.finish(job.attrs.name);
-	logger.success({message: 'job compeleted', job: job.attrs.name, duration: duration.asSeconds().toFixed(2)});
+	logger.success({message: 'job compeleted', job: job.attrs.name, duration: duration.asMilliseconds()});
 });
 
 agenda.on('fail', function (err, job) {
