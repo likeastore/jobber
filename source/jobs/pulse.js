@@ -35,6 +35,9 @@ function pulse(interval, callback) {
 				$sort: {
 					likes: -1
 				}
+			},
+			{
+				$limit: 50
 			}
 		], callback);
 	}
@@ -44,7 +47,7 @@ function pulse(interval, callback) {
 			return item.likes > 2;
 		});
 
-		callback(null, filtered.slice(0, 50));
+		callback(null, filtered);
 	}
 
 	function resolve(filtered, callback) {
