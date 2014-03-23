@@ -28,7 +28,7 @@ agenda.on('start', function (job) {
 	logger.info({message: 'job started', job: job.attrs.name});
 });
 
-agenda.on('complete', function (job) {
+agenda.on('success', function (job) {
 	var duration = timing.finish(job.attrs.name);
 	logger.success({message: 'job compeleted', job: job.attrs.name, duration: duration.asMilliseconds()});
 });
