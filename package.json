@@ -19,6 +19,9 @@
     "redis": "~0.10.1",
     "hiredis": "~0.1.16",
     "async": "~0.2.10",
-    "moment": "~2.5.1"
+    "moment": "~2.5.1",
+    "agenda": "~0.5.10",
+    "colors": "~0.6.2",
+    "node-logentries": "~0.1.4"
   }
 }
