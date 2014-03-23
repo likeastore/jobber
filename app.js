@@ -13,8 +13,13 @@ agenda.define('weekly pulse', function (job, callback) {
 	pulse('week', callback);
 });
 
-agenda.every('1 minute', 'daily pulse');
-agenda.every('1 minute', 'weekly pulse');
+agenda.define('month pulse', function (job, callback) {
+	pulse('month', callback);
+});
+
+agenda.every('15 minute', 'daily pulse');
+agenda.every('30 minute', 'weekly pulse');
+agenda.every('60 minute', 'month pulse');
 
 agenda.on('start', function (job) {
 	logger.info({message: 'job started', job: job});
