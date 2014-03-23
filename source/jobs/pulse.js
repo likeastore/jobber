@@ -3,32 +3,6 @@ var moment = require('moment');
 var config = require('../../config');
 var mongo = require('../db/mongo')(config);
 
-function nearestTimespan(interval) {
-	var current = moment().subtract(6, 'days');
-	var intervals = {
-		'day': function () {
-			return {
-				from: moment(current).startOf('day').toDate(),
-				to: moment(current).endOf('day').toDate()
-			};
-		},
-		'week': function () {
-			return {
-				from: moment(current).startOf('week').toDate(),
-				to: moment(current).endOf('week').toDate()
-			};
-		},
-		'month': function () {
-			return {
-				from: moment(current).startOf('month').toDate(),
-				to: moment(current).endOf('month').toDate()
-			};
-		}
-	};
-
-	return intervals[interval]();
-}
-
 function pulse(interval, callback) {
 	var timespan = nearestTimespan(interval);
 
@@ -108,6 +82,33 @@ function pulse(interval, callback) {
 
 		return interval === 'week' ? date.startOf('week').format('YYYY-MM-DD') : date.format('YYYY-MM-DD');
 	}
+}
+
+function nearestTimespan(interval) {
+	var intervals = {
+		'day': function () {
+			return {
+				from: moment().startOf('day').toDate(),
+				to: moment().endOf('day').toDate()
+			};
+		},
+		'week': function () {
+			return {
+				from: moment().startOf('week').toDate(),
+				to: moment().endOf('week').toDate()
+			};
+		},
+		'month': function () {
+			return {
+				from: moment().startOf('month').toDate(),
+				to: moment().endOf('month').toDate()
+			};
+		}
+	};
+
+	var nearest = intervals[interval];
+
+	return nearest && nearest();
 }
 
 module.exports = pulse;
