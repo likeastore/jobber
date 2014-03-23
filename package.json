@@ -16,8 +16,6 @@
   },
   "dependencies": {
     "mongojs": "~0.10.1",
-    "redis": "~0.10.1",
-    "hiredis": "~0.1.16",
     "async": "~0.2.10",
     "moment": "~2.5.1",
     "agenda": "~0.5.10",
