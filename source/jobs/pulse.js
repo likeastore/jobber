@@ -61,6 +61,7 @@ function pulse(interval, callback) {
 					likes: item.likes,
 					description: found.description,
 					thumbnail: found.thumbnail,
+					created: found.created,
 					type: found.type
 				});
 			});
@@ -73,13 +74,13 @@ function pulse(interval, callback) {
 		mongo.pulse.update(
 			{interval: interval, date: date},
 			{interval: interval, date: date, timespan: timespan, results: resolved},
-			{upsert: true, 'new': true},
+			{upsert: true},
 			callback);
 	}
 }
 
 function nearestTimespan(interval) {
-	var current = moment();
+	var current = moment(); //.subtract('days', 10);
 
 	var intervals = {
 		'day': function () {
