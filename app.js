@@ -19,9 +19,9 @@ agenda.define('month pulse', function (job, callback) {
 	pulse('month', callback);
 });
 
-agenda.every('5 minute', 'daily pulse');
-agenda.every('10 minute', 'weekly pulse');
-agenda.every('15 minute', 'month pulse');
+agenda.every('1 minute', 'daily pulse');
+agenda.every('2 minute', 'weekly pulse');
+agenda.every('3 minute', 'month pulse');
 
 agenda.on('start', function (job) {
 	timing.start(job.attrs.name);
