@@ -37,14 +37,20 @@ function pulse(interval, callback) {
 				}
 			},
 			{
-				$limit: 50
+				$limit: 100
 			}
 		], callback);
 	}
 
 	function filter(aggregated, callback) {
+		var filtering = {
+			'day': 1,
+			'week': 2,
+			'month': 4
+		};
+
 		var filtered = aggregated.filter(function (item) {
-			return item.likes > 2;
+			return item.likes > filtering[interval];
 		});
 
 		callback(null, filtered);
