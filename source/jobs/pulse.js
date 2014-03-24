@@ -65,6 +65,9 @@ function pulse(interval, callback) {
 					description: found.description,
 					thumbnail: found.thumbnail,
 					created: found.created,
+					title: found.title || found.repo || found.name,
+					authorName: found.authorName,
+					avatarUrl: found.avatarUrl,
 					type: found.type
 				});
 			});
