@@ -2,6 +2,8 @@ var Agenda = require('agenda');
 var config = require('./config');
 
 var pulse = require('./source/jobs/pulse');
+var spread = require('./source/jobs/spread');
+
 var logger = require('./source/utils/logger');
 var timing = require('./source/utils/timing');
 
@@ -20,9 +22,15 @@ agenda.purge(function () {
 		pulse('month', callback);
 	});
 
-	agenda.every('10 minutes', 'measure pulse day');
-	agenda.every('30 minutes', 'measure pulse week');
-	agenda.every('60 minutes', 'measure pulse month');
+	// agenda.define('send weekly pulse', function (job, callback) {
+	// 	spread('week', callback);
+	// });
+
+	agenda.every('3 minutes', 'measure pulse day');
+	agenda.every('12 minutes', 'measure pulse week');
+	agenda.every('29 minutes', 'measure pulse month');
+
+	agenda.schedule('saturday at 9', 'send weekly pulse').repeatEvery('week');
 
 	agenda.on('start', function (job) {
 		timing.start(job.attrs.name);

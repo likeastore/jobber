@@ -66,6 +66,7 @@ function pulse(interval, callback) {
 				}
 
 				callback(null, {
+					_id: item._id,
 					url: item._id.url,
 					likes: item.likes,
 					description: found.description,
