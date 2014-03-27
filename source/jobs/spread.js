@@ -3,6 +3,7 @@ var async = require('async');
 var moment = require('moment');
 var config = require('../../config');
 var mongo = require('../db/mongo')(config);
+var mandrill = require('node-mandrill')(config.mandrill.token);
 
 function spread(interval, callback) {
 	var current = moment().format('YYYY-MM-DD');
@@ -67,17 +68,36 @@ function spread(interval, callback) {
 	}
 
 	function send(users, fields, callback) {
-		callback(null);
+		var to = users.map(function (email) {
+			return { email: email };
+		});
+
+		var merge = users.map(function (email) {
+			return {rcpt: email, vars: [{name: 'userid', content: emails[email]}]};
+		});
+
+		mandrill('/messages/send-template', {
+			template_name: 'likeastore-pulse-weekly',
+			template_content: [],
+			global_merge_vars: fields,
+
+			message: {
+				auto_html: null,
+				to: to,
+				preserve_recipients: false,
+				merge_vars: merge
+			},
+		}, callback);
 	}
 
-function either() {
-	var o = arguments[0];
-	var p = Array.prototype.slice.call(arguments, 1);
+	function either() {
+		var o = arguments[0];
+		var p = Array.prototype.slice.call(arguments, 1);
 
-	return p.reduce(function (p, c) {
-		return o[p] || o[c];
-	});
-}
+		return p.reduce(function (p, c) {
+			return o[p] || o[c];
+		});
+	}
 }
 
 module.exports = spread;
