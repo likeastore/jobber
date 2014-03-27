@@ -4,7 +4,7 @@ var moment = require('moment');
 var config = require('../../config');
 var mongo = require('../db/mongo')(config);
 
-function spread(callback) {
+function spread(interval, callback) {
 	var current = moment().format('YYYY-MM-DD');
 
 	async.waterfall([
@@ -15,7 +15,7 @@ function spread(callback) {
 	], callback);
 
 	function read(callback) {
-		mongo.pulse.findOne({date: current}, function (err, pulse) {
+		mongo.pulse.findOne({date: current, interval: interval}, function (err, pulse) {
 			if (err) {
 				return callback(err);
 			}
@@ -30,14 +30,22 @@ function spread(callback) {
 		});
 
 		var titles = Object.keys(grouped).map(function (key) {
-			return { name: 'BEST_OF_' + key.toUpperCase() + '_TITLE', content: _.first(grouped[key]).title };
+			return { name: 'BEST_OF_' + key.toUpperCase() + '_TITLE', content: either(_.first(grouped[key]), 'title', 'authorName') };
 		});
 
 		var descriptions = Object.keys(grouped).map(function (key) {
 			return { name: 'BEST_OF_' + key.toUpperCase() + '_DESCRIPTION', content: _.first(grouped[key]).description };
 		});
 
-		var fields = _.union([titles, descriptions]);
+		var urls = Object.keys(grouped).map(function (key) {
+			return { name: 'BEST_OF_' + key.toUpperCase() + '_URL', content: _.first(grouped[key]).url };
+		});
+
+		var likes = Object.keys(grouped).map(function (key) {
+			return { name: 'BEST_OF_' + key.toUpperCase() + '_LIKES', content: _.first(grouped[key]).likes };
+		});
+
+		var fields = _.union([titles, descriptions, urls, likes]);
 
 		callback(null, fields);
 	}
@@ -59,10 +67,17 @@ function spread(callback) {
 	}
 
 	function send(users, fields, callback) {
-		console.log(fields);
-
 		callback(null);
 	}
+
+function either() {
+	var o = arguments[0];
+	var p = Array.prototype.slice.call(arguments, 1);
+
+	return p.reduce(function (p, c) {
+		return o[p] || o[c];
+	});
+}
 }
 
 module.exports = spread;
