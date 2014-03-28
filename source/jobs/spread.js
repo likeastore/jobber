@@ -21,6 +21,10 @@ function spread(interval, callback) {
 				return callback(err);
 			}
 
+			if (!pulse) {
+				return callback({message: 'failed to get pulse', date: current});
+			}
+
 			callback(null, pulse.results);
 		});
 	}
@@ -68,26 +72,43 @@ function spread(interval, callback) {
 	}
 
 	function send(users, fields, callback) {
-		var to = users.map(function (email) {
-			return { email: email };
-		});
+		var emails = Object.keys(users);
 
-		var merge = users.map(function (email) {
+		var merge = emails.map(function (email) {
 			return {rcpt: email, vars: [{name: 'userid', content: emails[email]}]};
 		});
 
-		mandrill('/messages/send-template', {
-			template_name: 'likeastore-pulse-weekly',
-			template_content: [],
-			global_merge_vars: fields,
+		async.map(splitToChunks(emails), pushToMandrill, callback);
 
-			message: {
-				auto_html: null,
-				to: to,
-				preserve_recipients: false,
-				merge_vars: merge
-			},
-		}, callback);
+		function pushToMandrill(emailsChunk, callback) {
+			var to = emailsChunk.map(function (email) {
+				return { email: email };
+			});
+
+			mandrill('/messages/send-template', {
+				template_name: 'likeastore-pulse-weekly',
+				template_content: [],
+				global_merge_vars: fields,
+
+				message: {
+					auto_html: null,
+					to: to,
+					preserve_recipients: false,
+					merge_vars: merge
+				},
+			}, callback);
+		}
+
+	}
+
+	function splitToChunks(arr) {
+		var chunks = [], size = 1024;
+
+		while (arr.length > 0) {
+			chunks.push(arr.splice(0, size));
+		}
+
+		return chunks;
 	}
 
 	function either() {

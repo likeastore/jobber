@@ -26,9 +26,9 @@ agenda.purge(function () {
 		spread('week', callback);
 	});
 
-	agenda.every('3 minutes', 'measure pulse day');
-	agenda.every('12 minutes', 'measure pulse week');
-	agenda.every('29 minutes', 'measure pulse month');
+	// agenda.every('3 minutes', 'measure pulse day');
+	// agenda.every('12 minutes', 'measure pulse week');
+	// agenda.every('29 minutes', 'measure pulse month');
 
 	agenda.every('3 minutes', 'send weekly pulse');
 
