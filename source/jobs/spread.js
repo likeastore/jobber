@@ -39,7 +39,7 @@ function spread(interval, recipients, callback) {
 		});
 
 		var descriptions = Object.keys(grouped).map(function (key) {
-			return { name: 'BEST_OF_' + key.toUpperCase() + '_DESCRIPTION', content: _.first(grouped[key]).description };
+			return { name: 'BEST_OF_' + key.toUpperCase() + '_DESCRIPTION', content: truncate(_.first(grouped[key]).description, 240) };
 		});
 
 		var urls = Object.keys(grouped).map(function (key) {
@@ -50,7 +50,11 @@ function spread(interval, recipients, callback) {
 			return { name: 'BEST_OF_' + key.toUpperCase() + '_LIKES', content: _.first(grouped[key]).likes };
 		});
 
-		var fields = _.union(titles, descriptions, urls, likes);
+		var thumbnails = Object.keys(grouped).map(function (key) {
+			return { name: 'BEST_OF_' + key.toUpperCase() + '_THUMBNAIL', content: _.first(grouped[key]).thumbnail };
+		});
+
+		var fields = _.union(titles, descriptions, urls, likes, thumbnails);
 
 		callback(null, fields);
 	}
@@ -126,6 +130,22 @@ function spread(interval, recipients, callback) {
 		return p.reduce(function (p, c) {
 			return o[p] || o[c];
 		});
+	}
+
+	function truncate(text, length, end) {
+		if (isNaN(length)) {
+			length = 100;
+		}
+
+		if (!end || typeof end !== 'string') {
+			end = "...";
+		}
+
+		if (text.length <= length || text.length - end.length <= length) {
+			return text;
+		} else {
+			return text.substring(0, length - end.length) + end;
+		}
 	}
 }
 
