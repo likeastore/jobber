@@ -39,7 +39,7 @@ function spread(interval, recipients, callback) {
 		});
 
 		var descriptions = Object.keys(grouped).map(function (key) {
-			return { name: 'BEST_OF_' + key.toUpperCase() + '_DESCRIPTION', content: truncate(_.first(grouped[key]).description, 240) };
+			return { name: 'BEST_OF_' + key.toUpperCase() + '_DESCRIPTION', content: truncate(_.first(grouped[key]).description || '', 240) };
 		});
 
 		var urls = Object.keys(grouped).map(function (key) {
