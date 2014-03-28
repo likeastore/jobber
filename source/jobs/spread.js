@@ -5,7 +5,7 @@ var config = require('../../config');
 var mongo = require('../db/mongo')(config);
 var mandrill = require('node-mandrill')(config.mandrill.token);
 
-function spread(interval, callback) {
+function spread(interval, recipients, callback) {
 	var current = moment().format('YYYY-MM-DD');
 
 	async.waterfall([
@@ -50,7 +50,7 @@ function spread(interval, callback) {
 			return { name: 'BEST_OF_' + key.toUpperCase() + '_LIKES', content: _.first(grouped[key]).likes };
 		});
 
-		var fields = _.union([titles, descriptions, urls, likes]);
+		var fields = _.union(titles, descriptions, urls, likes);
 
 		callback(null, fields);
 	}
@@ -58,24 +58,32 @@ function spread(interval, callback) {
 	function emails(fields, callback) {
 		var users = {};
 
-		mongo.users.find({unsubscribed: {$exists: false}, firstTimeUser: {$exists: false}}).forEach(function (err, user) {
-			if (err) {
-				return callback(err);
-			}
+		if (recipients === 'devs') {
+			return callback(null, {'info@likeastore.com': 1}, fields);
+		} else if (recipients === 'users') {
+			return findUsers();
+		}
 
-			if (!user) {
-				return callback(null, users, fields);
-			}
+		function findUsers() {
+			mongo.users.find({unsubscribed: {$exists: false}, firstTimeUser: {$exists: false}}).forEach(function (err, user) {
+				if (err) {
+					return callback(err);
+				}
 
-			users[user.email] = user._id.toString();
-		});
+				if (!user) {
+					return callback(null, users, fields);
+				}
+
+				users[user.email] = user._id.toString();
+			});
+		}
 	}
 
 	function send(users, fields, callback) {
 		var emails = Object.keys(users);
 
 		var merge = emails.map(function (email) {
-			return {rcpt: email, vars: [{name: 'userid', content: emails[email]}]};
+			return {rcpt: email, vars: [{name: 'userid', content: users[email]}]};
 		});
 
 		async.map(splitToChunks(emails), pushToMandrill, callback);
@@ -88,9 +96,9 @@ function spread(interval, callback) {
 			mandrill('/messages/send-template', {
 				template_name: 'likeastore-pulse-weekly',
 				template_content: [],
-				global_merge_vars: fields,
 
 				message: {
+					global_merge_vars: fields,
 					auto_html: null,
 					to: to,
 					preserve_recipients: false,
