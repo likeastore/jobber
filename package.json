@@ -1,6 +1,6 @@
 {
   "name": "pulse",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Find and spread the best content for Likeastore users",
   "main": "app.js",
   "scripts": {
