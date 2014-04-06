@@ -36,8 +36,8 @@ agenda.purge(function () {
 	agenda.every('29 minutes', 'measure pulse month');
 
 	// emails
-	agenda.schedule('friday at 4pm', 'send weekly pulse developers').repeatEvery('week').save();
-	agenda.schedule('saturday at 6am', 'send weekly pulse users').repeatEvery('week').save();
+	agenda.schedule('friday at 2pm', 'send weekly pulse developers').repeatEvery('1 week').save();
+	agenda.schedule('saturday at 5am', 'send weekly pulse users').repeatEvery('1 week').save();
 
 	agenda.on('start', function (job) {
 		timing.start(job.attrs.name);
