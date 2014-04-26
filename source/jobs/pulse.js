@@ -20,7 +20,7 @@ function pulse(interval, callback) {
 	function aggregate(callback) {
 		mongo.items.aggregate([
 			{
-				$match: {date: {$gte: timespan.from, $lt: timespan.to}}
+				$match: {created: {$gte: timespan.from, $lt: timespan.to}}
 			},
 			{
 				$group: {
