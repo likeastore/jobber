@@ -60,7 +60,7 @@ function pulse(interval, callback) {
 		async.map(filtered, db, callback);
 
 		function db(item, callback) {
-			mongo.items.findOne({itemId: item._id.item, user: item.userData.email }, function (err, found) {
+			mongo.items.findOne({itemId: item._id.item}, function (err, found) {
 				if (err) {
 					return callback(err);
 				}
