@@ -31,9 +31,9 @@ agenda.purge(function () {
 	});
 
 	// pulse
-	agenda.every('3 minutes', 'measure pulse day');
-	agenda.every('12 minutes', 'measure pulse week');
-	agenda.every('29 minutes', 'measure pulse month');
+	agenda.every('30 minutes', 'measure pulse day');
+	agenda.every('60 minutes', 'measure pulse week');
+	agenda.every('360 minutes', 'measure pulse month');
 
 	// emails
 	agenda.schedule('friday at 2pm', 'send weekly pulse developers').repeatEvery('1 week').save();
