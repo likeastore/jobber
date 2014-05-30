@@ -31,8 +31,8 @@ agenda.purge(function () {
 	});
 
 	// pulse
-	agenda.every('30 minutes', 'measure pulse day');
-	agenda.every('60 minutes', 'measure pulse week');
+	agenda.every('10 minutes', 'measure pulse day');
+	agenda.every('30 minutes', 'measure pulse week');
 	agenda.every('360 minutes', 'measure pulse month');
 
 	// emails

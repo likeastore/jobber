@@ -54,16 +54,30 @@ function spread(interval, recipients, callback) {
 			return { name: 'BEST_OF_' + key.toUpperCase() + '_THUMBNAIL', content: _.first(grouped[key]).thumbnail };
 		});
 
-		var fields = _.union(titles, descriptions, urls, likes, thumbnails);
+		var mores = [
+			{ name: 'MORE', content: Math.floor((Math.random() * 20) + 24) }
+		];
 
-		callback(null, fields);
+		var fields = _.union(titles, descriptions, urls, likes, thumbnails, mores);
+
+		var subject = createSubject(titles);
+
+		callback(null, {fields: fields, subject: subject});
+
+		function createSubject(titles) {
+			var titles = titles.map(function (title) {
+				return title.content;
+			}).join(', ');
+
+			return 'Likeastore: ' + titles + ' and more..';
+		}
 	}
 
-	function emails(fields, callback) {
+	function emails(message, callback) {
 		var users = {};
 
 		if (recipients === 'devs') {
-			return callback(null, {'info@likeastore.com': 1}, fields);
+			return callback(null, {'info@likeastore.com': 1}, message);
 		} else if (recipients === 'users') {
 			return findUsers();
 		}
@@ -75,7 +89,7 @@ function spread(interval, recipients, callback) {
 				}
 
 				if (!user) {
-					return callback(null, users, fields);
+					return callback(null, users, message);
 				}
 
 				users[user.email] = user._id.toString();
@@ -83,7 +97,7 @@ function spread(interval, recipients, callback) {
 		}
 	}
 
-	function send(users, fields, callback) {
+	function send(users, message, callback) {
 		var emails = Object.keys(users);
 
 		var merge = emails.map(function (email) {
@@ -102,7 +116,8 @@ function spread(interval, recipients, callback) {
 				template_content: [],
 
 				message: {
-					global_merge_vars: fields,
+					global_merge_vars: message.fields,
+					subject: message.subject,
 					auto_html: null,
 					to: to,
 					preserve_recipients: false,
@@ -110,7 +125,6 @@ function spread(interval, recipients, callback) {
 				},
 			}, callback);
 		}
-
 	}
 
 	function splitToChunks(arr) {
