@@ -11,8 +11,7 @@
   "devDependencies": {
     "mocha": "~1.10.0",
     "chai": "~1.6.1",
-    "sinon-chai": "~2.4.0",
-    "request": "~2.21.0"
+    "sinon-chai": "~2.4.0"
   },
   "engines": {
     "node": "0.10.x"
@@ -26,6 +25,7 @@
     "node-logentries": "~0.1.4",
     "respawn": "~0.2.0",
     "underscore": "~1.6.0",
-    "node-mandrill": "~1.0.1"
+    "node-mandrill": "~1.0.1",
+    "request": "~2.36.0"
   }
 }
