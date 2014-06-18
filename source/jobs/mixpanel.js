@@ -138,7 +138,9 @@ function userProfile(user, callback) {
 					return callback(err);
 				}
 
-				callback(null, {'Activated': networksCount > 1 && collectionsCount > 2});
+				var activated = networksCount > 1 && collectionsCount > 2;
+
+				callback(null, {'Activated': activated});
 			});
 		});
 	}
