@@ -7,7 +7,7 @@ var mixpanel = require('./source/jobs/mixpanel');
 var logger = require('./source/utils/logger');
 var timing = require('./source/utils/timing');
 
-var agenda = new Agenda({db: {address: config.connection, collection: 'jobs'} });
+var agenda = new Agenda({db: {address: config.connection, collection: 'jobs', defaultConcurrency: 1, maxConcurrency: 1} });
 
 agenda.purge(function () {
 	pulse(agenda);
