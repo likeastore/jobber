@@ -163,4 +163,17 @@ function spread(interval, recipients, callback) {
 	}
 }
 
-module.exports = spread;
+function define(agenda) {
+	agenda.define('send weekly pulse developers', function (job, callback) {
+		spread('week', 'devs', callback);
+	});
+
+	agenda.define('send weekly pulse users', function (job, callback) {
+		spread('week', 'users', callback);
+	});
+
+	agenda.schedule('friday at 2pm', 'send weekly pulse developers').repeatEvery('1 week').save();
+	agenda.schedule('saturday at 5am', 'send weekly pulse users').repeatEvery('1 week').save();
+}
+
+module.exports = define;
