@@ -1,7 +1,194 @@
+var _ = require('underscore');
 var async = require('async');
 var moment = require('moment');
+var request = require('request');
+
 var config = require('../../config');
 var db = require('../db/mongo')(config);
+
+var mixpanelApi = config.mixpanel.api;
+var mixpanelToken = config.mixpanel.token;
+
+function userProfile(user, callback) {
+	var parts = [
+		email,
+		avatar,
+		fullName,
+		firstName,
+		location,
+		website,
+		lastLogin,
+		publicCollections,
+		privateCollections,
+		collectionsFollows,
+		collectionsFollowed,
+		networksEnabled,
+		networksDisabled,
+		followers,
+		activated,
+		totalItems,
+		totalItemsInPublicCollections,
+		totalItemsInPrivateCollections,
+		verified,
+		unsubscribed
+	];
+
+	async.parallel(parts, function (err, results) {
+		if (err) {
+			return callback(err);
+		}
+
+		var profile = results.reduce(function (memo, prop) {
+			return _.extend(memo, prop);
+		}, {});
+
+		callback(null, profile);
+	});
+
+	function email(callback) {
+		callback(null, {'$email': user.email});
+	}
+
+	function avatar(callback) {
+		callback(null, {'Avatar': user.avatar});
+	}
+
+	function fullName(callback) {
+		callback(null, {'Full Name': user.displayName});
+	}
+
+	function firstName(callback) {
+		callback(null, {'First Name': extractName(user.displayName)});
+
+		function extractName(name) {
+			return (name && name.split(/\s|,/)[0]) || name;
+		}
+	}
+
+	function location(callback) {
+		callback(null, {'Location': user.location});
+	}
+
+	function website(callback) {
+		callback(null, {'Website': user.website});
+	}
+
+	function lastLogin(callback) {
+		callback(null, {'$last_login': user.loginLastDate});
+	}
+
+	function publicCollections(callback) {
+		db.collections.count({user: user.email, public: true}, function (err, count) {
+			if (err) {
+				return callback(err);
+			}
+
+			callback(null, {'Public Collections': count});
+		});
+	}
+
+	function privateCollections(callback) {
+		db.collections.count({user: user.email, public: false}, function (err, count) {
+			if (err) {
+				return callback(err);
+			}
+
+			callback(null, {'Private Collections': count});
+		});
+	}
+
+	function collectionsFollows(callback) {
+		callback(null, {'Collections Follows': (user.followCollections && user.followCollections.length) || 0 });
+	}
+
+	function collectionsFollowed(callback) {
+		db.collections.count({user: user.email, followers: {$exists: true}}, function (err, count) {
+			if (err) {
+				return callback(err);
+			}
+
+			callback(null, {'Collections Followed': count});
+		});
+	}
+
+	function networksEnabled(callback) {
+		db.networks.count({user: user.email, disabled: {$exists: false}}, function (err, count) {
+			callback(err, {'Networks Enabled': count});
+		});
+	}
+
+	function networksDisabled(callback) {
+		db.networks.count({user: user.email, disabled: true}, function (err, count) {
+			callback(err, {'Networks Disabled': count});
+		});
+	}
+
+	function followers(callback) {
+		callback(null, {'Followers': (user.followed && user.followed.length) || 0});
+	}
+
+	function activated(callback) {
+		db.networks.count({user: user.email}, function (err, networksCount) {
+			if (err) {
+				return callback(err);
+			}
+
+			db.collections.count({user: user.email, public: true}, function (err, collectionsCount) {
+				if (err) {
+					return callback(err);
+				}
+
+				callback(null, {'Activated': networksCount > 1 && collectionsCount > 2});
+			});
+		});
+	}
+
+	function totalItems(callback) {
+		db.items.count({user: user.email}, function (err, count) {
+			if (err) {
+				return callback(err);
+			}
+
+			callback(null, {'Total Likes Stored': count});
+		});
+	}
+
+	function totalItemsInPublicCollections(callback) {
+		db.collections.find({user: user.email, public: true}, function (err, collections) {
+			if (err) {
+				return callback(err);
+			}
+
+			var total = collections.reduce(function (memo, collection) {
+				return memo + ((collection.items && collection.items.length) || 0);
+			}, 0);
+
+			callback(null, {'Likes in Public Collections': total});
+		});
+	}
+
+	function totalItemsInPrivateCollections(callback) {
+		db.collections.find({user: user.email, public: false}, function (err, collections) {
+			if (err) {
+				return callback(err);
+			}
+
+			var total = collections.reduce(function (memo, collection) {
+				return memo + ((collection.items && collection.items.length) || 0);
+			}, 0);
+
+			callback(null, {'Likes in Private Collections': total});
+		});
+	}
+
+	function verified(callback) {
+		callback(null, {'Verified': user.verified || true});
+	}
+
+	function unsubscribed(callback) {
+		callback(null, {'Unsubscribed': user.unsubscribed || false});
+	}
+}
 
 function updateMixpanel(callback) {
 	var period = moment().subtract(4, 'month');
@@ -51,7 +238,7 @@ function define(agenda) {
 		updateMixpanel(callback);
 	});
 
-	agenda.every('12 hours', 'update mixpanel');
+	agenda.every('6 hours', 'update mixpanel');
 }
 
 module.exports = define;

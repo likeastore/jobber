@@ -121,4 +121,22 @@ function nearestTimespan(interval) {
 	return nearest && nearest();
 }
 
-module.exports = pulse;
+function define(agenda) {
+	agenda.define('measure pulse day', function (job, callback) {
+		pulse('day', callback);
+	});
+
+	agenda.define('measure pulse week', function (job, callback) {
+		pulse('week', callback);
+	});
+
+	agenda.define('measure pulse month', function (job, callback) {
+		pulse('month', callback);
+	});
+
+	agenda.every('10 minutes', 'measure pulse day');
+	agenda.every('30 minutes', 'measure pulse week');
+	agenda.every('360 minutes', 'measure pulse month');
+}
+
+module.exports = define;
