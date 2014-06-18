@@ -1,19 +1,17 @@
 var config = {
-	connection: 'mongodb://localhost:27017/likeastoredb',
+	connection: 'mongodb://localhost:27017/likeastoretestdb',
 
 	mandrill: {
-		token: '2kXX0stV1Hf56y9DYZts3A'
+		token: null
+	},
+
+	mixpanel: {
+		api: 'http://api.mixpanel.com',
+		token: null
 	},
 
 	logentries: {
 		token: null
-	},
-
-	analytics: {
-		url: 'http://localhost:3005',
-		application: 'likeastore-development',
-		username: 'likeastore',
-		password: 'mypass'
 	}
 };
 

@@ -2,18 +2,16 @@ var config = {
 	connection: process.env.MONGO_CONNECTION,
 
 	mandrill: {
-		token: '2kXX0stV1Hf56y9DYZts3A'
+		token: process.env.MANDRILL_TOKEN
+	},
+
+	mixpanel: {
+		api: 'http://api.mixpanel.com',
+		token: process.env.MIXPANEL_TOKEN
 	},
 
 	logentries: {
-		token: 'dda9ed8e-678b-42b8-ab15-b7cec4a6ee1d'
-	},
-
-	analytics: {
-		url: 'http://localhost:3005',
-		application: 'likeastore-development',
-		username: 'likeastore',
-		password: 'mypass'
+		token: process.env.LOGENTRIES_TOKEN
 	}
 };
 
