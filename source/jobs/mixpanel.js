@@ -138,7 +138,8 @@ function userProfile(user, callback) {
 					return callback(err);
 				}
 
-				var activated = networksCount > 1 && collectionsCount > 2;
+				var verified = user.verified || true;
+				var activated = verified && networksCount > 1 && collectionsCount > 2;
 
 				callback(null, {'Activated': activated});
 			});
@@ -240,7 +241,7 @@ function define(agenda) {
 		updateMixpanel(callback);
 	});
 
-	agenda.every('6 hours', 'update mixpanel');
+	agenda.every('3 hours', 'update mixpanel');
 }
 
 module.exports = define;
