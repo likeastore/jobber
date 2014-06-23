@@ -11,6 +11,7 @@ var mixpanelToken = config.mixpanel.token;
 
 function userProfile(user, callback) {
 	var parts = [
+		id,
 		email,
 		avatar,
 		fullName,
@@ -44,6 +45,10 @@ function userProfile(user, callback) {
 
 		callback(null, profile);
 	});
+
+	function id(callback) {
+		callback(null, {'Id': user._id});
+	}
 
 	function email(callback) {
 		callback(null, {'$email': user.email});
@@ -241,7 +246,7 @@ function define(agenda) {
 		updateMixpanel(callback);
 	});
 
-	agenda.every('3 hours', 'update mixpanel');
+	agenda.every('1 hour', 'update mixpanel');
 }
 
 module.exports = define;
