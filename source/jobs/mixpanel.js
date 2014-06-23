@@ -16,6 +16,7 @@ function userProfile(user, callback) {
 		avatar,
 		fullName,
 		firstName,
+		userName,
 		location,
 		website,
 		registered,
@@ -60,15 +61,19 @@ function userProfile(user, callback) {
 	}
 
 	function fullName(callback) {
-		callback(null, {'Full Name': user.displayName});
+		callback(null, {'$name': user.displayName});
 	}
 
 	function firstName(callback) {
-		callback(null, {'First Name': extractName(user.displayName)});
+		callback(null, {'$first_name': extractName(user.displayName)});
 
 		function extractName(name) {
 			return (name && name.split(/\s|,/)[0]) || name;
 		}
+	}
+
+	function userName(callback) {
+		callback(null, {'$username': user.name});
 	}
 
 	function location(callback) {
