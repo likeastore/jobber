@@ -18,6 +18,7 @@ function userProfile(user, callback) {
 		firstName,
 		location,
 		website,
+		registered,
 		lastLogin,
 		publicCollections,
 		privateCollections,
@@ -76,6 +77,10 @@ function userProfile(user, callback) {
 
 	function website(callback) {
 		callback(null, {'Website': user.website});
+	}
+
+	function registered(callback) {
+		callback(null, {'$created': user.registered});
 	}
 
 	function lastLogin(callback) {
