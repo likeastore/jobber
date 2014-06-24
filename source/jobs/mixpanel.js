@@ -33,6 +33,7 @@ function userProfile(user, callback) {
 		totalItemsInPublicCollections,
 		totalItemsInPrivateCollections,
 		verified,
+		score,
 		unsubscribed
 	];
 
@@ -201,6 +202,10 @@ function userProfile(user, callback) {
 
 	function verified(callback) {
 		callback(null, {'Verified': user.verified || true});
+	}
+
+	function score(callback) {
+		callback(null, {'Score': user.score.total});
 	}
 
 	function unsubscribed(callback) {
