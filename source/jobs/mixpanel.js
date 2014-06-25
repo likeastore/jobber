@@ -205,7 +205,7 @@ function userProfile(user, callback) {
 	}
 
 	function score(callback) {
-		callback(null, {'Score': user.score.total});
+		callback(null, {'Score': (user.score && user.score.total) || 0});
 	}
 
 	function unsubscribed(callback) {
