@@ -20,6 +20,11 @@ var config = {
 		},
 
 		requestTimeout: 10000
+	},
+
+	notifier: {
+		url: 'http://localhost:3031',
+		accessToken: '1234'
 	}
 };
 

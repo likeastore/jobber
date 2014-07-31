@@ -25,6 +25,11 @@ var config = {
 		},
 
 		requestTimeout: 5000
+	},
+
+	notifier: {
+		url: 'http://notifier.likeastore.com',
+		accessToken: process.env.NOTIFIER_ACCESS_TOKEN
 	}
 };
 
