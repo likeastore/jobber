@@ -133,7 +133,7 @@ function indexFeed(callback) {
 			return callback(err);
 		}
 
-		async.eachLimit(users, 16, retriveFeedAndIndex, function (err, results) {
+		async.eachLimit(users, 8, retriveFeedAndIndex, function (err, results) {
 			if (err) {
 				return callback(err);
 			}
@@ -213,28 +213,16 @@ function indexFeed(callback) {
 	}
 
 	function indexItems(user, items, callback) {
-		console.log('creating index tasks', indexName, 'index');
+		console.log('creating bulk operation for', indexName, 'index');
 
-		var tasks = items.map(function (item) {
-			return function (callback) {
-				elastic.index({
-					index: indexName,
-					type: typeName,
-					id: user._id + '-' + item._id + '-' + item.collection._id + '-' + item.collection.owner._id,
-					body: _.omit(item, '_id')
-				}, function (err) {
-					if (err) {
-						console.error(err);
-						console.error('failed to create document in elastic.');
-						return callback(err);
-					}
-
-					callback(null);
-				});
-			};
+		var commands = [];
+		items.forEach(function (item) {
+			var id = 'feed-' + user._id + '-' + item._id;
+			commands.push({'index': {'_index': indexName, '_type': typeName, '_id': id}});
+			commands.push(_.omit(item, '_id'));
 		});
 
-		async.series(tasks, function (err) {
+		elastic.bulk({body: commands}, function (err) {
 			if (err) {
 				console.error('failed to bulk insert', user.email);
 				return callback(err);
@@ -243,24 +231,6 @@ function indexFeed(callback) {
 			console.log('feed index sucessfully updated', user.email);
 			callback(null);
 		});
-
-		// console.log('creating bulk operation for', indexName, 'index');
-
-		// var commands = [];
-		// items.forEach(function (item) {
-		// 	commands.push({'index': {'_index': indexName, '_type': typeName}});
-		// 	commands.push(item);
-		// });
-
-		// elastic.bulk({body: commands, consistency: 'all'}, function (err) {
-		// 	if (err) {
-		// 		console.error('failed to bulk insert', user.email);
-		// 		return callback(err);
-		// 	}
-
-		// 	console.log('feed index sucessfully updated', user.email);
-		// 	callback(null);
-		// });
 	}
 }
 
@@ -270,8 +240,6 @@ function define(agenda) {
 			if (err) {
 				return callback(err);
 			}
-
-			console.log(results);
 
 			notifier('feed-indexing-completed', results, callback);
 		});
