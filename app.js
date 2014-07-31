@@ -12,17 +12,17 @@ var timing = require('./source/utils/timing');
 
 var agenda = new Agenda({db: {address: config.connection, collection: 'jobs', defaultConcurrency: 1, maxConcurrency: 1} });
 
-// agenda.purge(function () {
-// 	pulse(agenda);
-// 	mixpanel(agenda);
-// 	indexFeed(agenda);
+agenda.purge(function () {
+	pulse(agenda);
+	mixpanel(agenda);
+	indexFeed(agenda);
 
-// 	agenda.start();
-// });
+	agenda.start();
+});
 
-pulse(agenda);
-mixpanel(agenda);
-indexFeed(agenda);
+// pulse(agenda);
+// mixpanel(agenda);
+// indexFeed(agenda);
 
 agenda.on('start', function (job) {
 	timing.start(job.attrs.name);
