@@ -7,9 +7,9 @@ function notifierRequestUrl() {
 	return config.notifier.url + '/api/events?access_token=' + config.notifier.accessToken;
 }
 
-function notifier(e, user, data, callback) {
+function notifier(e, data, callback) {
 	var url = notifierRequestUrl();
-	var event = _.extend({event: e.replace(/ /g, '-')}, {user: user.email}, {data: data});
+	var event = _.extend({event: e.replace(/ /g, '-')}, {user: 'devs@likeastore.com'}, {data: data});
 
 	request.post({url: url, body: event, json: true}, function (err) {
 		if (err) {

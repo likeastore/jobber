@@ -1,10 +1,11 @@
 var _ = require('underscore');
 var async = require('async');
 
-var config = require('../config');
-var db = require('./db')(config);
-var elastic = require('./elastic')(config);
-var timing = require('./utils/timing');
+var config = require('../../config');
+var db = require('../db/mongo')(config);
+var elastic = require('../db/elastic')(config);
+var timing = require('../utils/timing');
+var notifier = require('../utils/notifier');
 
 var indexName = 'feeds', typeName = 'item';
 
@@ -236,7 +237,13 @@ function indexFeed(callback) {
 
 function define(agenda) {
 	agenda.define('index feed', function (job, callback) {
-		indexFeed(callback);
+		indexFeed(function (err, results) {
+			if (err) {
+				return callback(err);
+			}
+
+			notifier('feed-indexing-completed', results, callback);
+		});
 	});
 
 	agenda.every('6 hours', 'index feed');
