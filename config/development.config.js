@@ -1,5 +1,5 @@
 var config = {
-	connection: 'mongodb://localhost:27017/likeastoredb',
+	connection: 'mongodb://localhost:27017/likeastoreproddb',
 
 	mandrill: {
 		token: null,

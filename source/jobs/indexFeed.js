@@ -208,10 +208,6 @@ function indexFeed(callback) {
 				return _.extend(i.item, {collection: i.collection, feedOwner: user.email});
 			})) || [];
 
-			items = items.map(function (item) {
-				return _.omit(item, '_id');
-			});
-
 			callback(null, items);
 		});
 	}
@@ -221,13 +217,15 @@ function indexFeed(callback) {
 
 		var tasks = items.map(function (item) {
 			return function (callback) {
-				elastic.create({
+				elastic.index({
 					index: indexName,
 					type: typeName,
-					body: item
+					id: user._id + '-' + item._id + '-' + item.collection._id + '-' + item.collection.owner._id,
+					body: _.omit(item, '_id')
 				}, function (err) {
 					if (err) {
-						console.error('failed to create document in elastic.', err);
+						console.error(err);
+						console.error('failed to create document in elastic.');
 						return callback(err);
 					}
 
