@@ -1,10 +1,13 @@
 # Jobber
 
+Different jobs for Likeastore.
+
 ## Currently running jobs
 
 * [pulse](/source/jobs/pulse.js) - aggregates likes by reference count and stores to `pulse` collection.
 * [spread](/source/jobs/spread.js) - sends every week email with pulse contents
 * [mixpanel](/source/jobs/mixpanel.js) - updated our Mixpanel account with actual users stats
+* [indexFeed](/source/jobs/indexFeed.js) - updated ES index with users feed content
 
 # Licence (MIT)
 
