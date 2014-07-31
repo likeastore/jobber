@@ -74,7 +74,7 @@ var mappings = {
 };
 
 function indexFeed(callback) {
-	var users = 0, indexed = 0;
+	var indexedItems = 0;
 
 	timing.start('user-feed-index');
 
@@ -140,7 +140,7 @@ function indexFeed(callback) {
 
 			var duration = timing.finish('user-feed-index').asSeconds();
 
-			callback(null, {users: users, items: indexed, duration: duration });
+			callback(null, {users: users.length, items: indexedItems, time: duration });
 		});
 	}
 
@@ -158,8 +158,7 @@ function indexFeed(callback) {
 				return callback(null);
 			}
 
-			users += 1;
-			indexed += items.length;
+			indexedItems += items.length;
 
 			console.log('receieved ' + items.length + ' favorites');
 			indexItems(user, items, callback);
