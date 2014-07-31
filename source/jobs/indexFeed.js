@@ -74,7 +74,7 @@ var mappings = {
 };
 
 function indexFeed(callback) {
-	var users = 0, items = 0;
+	var users = 0, indexed = 0;
 
 	timing.start('user-feed-index');
 
@@ -140,7 +140,7 @@ function indexFeed(callback) {
 
 			var duration = timing.finish('user-feed-index').asSeconds();
 
-			callback(null, {users: users, items: items, duration: duration });
+			callback(null, {users: users, items: indexed, duration: duration });
 		});
 	}
 
@@ -159,7 +159,7 @@ function indexFeed(callback) {
 			}
 
 			users += 1;
-			items += items.length;
+			indexed += items.length;
 
 			console.log('receieved ' + items.length + ' favorites');
 			indexItems(user, items, callback);
@@ -217,7 +217,6 @@ function indexFeed(callback) {
 		console.log('creating bulk operation for', indexName, 'index');
 
 		var commands = [];
-
 		items.forEach(function (item) {
 			commands.push({'index': {'_index': indexName, '_type': typeName, '_id': item._id.toString()}});
 			commands.push(item);
