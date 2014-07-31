@@ -208,20 +208,35 @@ function indexFeed(callback) {
 				return _.extend(i.item, {collection: i.collection, feedOwner: user.email});
 			})) || [];
 
+			items = items.map(function (item) {
+				return _.omit(item, '_id');
+			});
+
 			callback(null, items);
 		});
 	}
 
 	function indexItems(user, items, callback) {
-		console.log('creating bulk operation for', indexName, 'index');
+		console.log('creating index tasks', indexName, 'index');
 
-		var commands = [];
-		items.forEach(function (item) {
-			commands.push({'index': {'_index': indexName, '_type': typeName, '_id': item._id.toString()}});
-			commands.push(item);
+		var tasks = items.map(function (item) {
+			return function (callback) {
+				elastic.create({
+					index: indexName,
+					type: typeName,
+					body: item
+				}, function (err) {
+					if (err) {
+						console.error('failed to create document in elastic.', err);
+						return callback(err);
+					}
+
+					callback(null);
+				});
+			};
 		});
 
-		elastic.bulk({body: commands}, function (err) {
+		async.series(tasks, function (err) {
 			if (err) {
 				console.error('failed to bulk insert', user.email);
 				return callback(err);
@@ -230,6 +245,24 @@ function indexFeed(callback) {
 			console.log('feed index sucessfully updated', user.email);
 			callback(null);
 		});
+
+		// console.log('creating bulk operation for', indexName, 'index');
+
+		// var commands = [];
+		// items.forEach(function (item) {
+		// 	commands.push({'index': {'_index': indexName, '_type': typeName}});
+		// 	commands.push(item);
+		// });
+
+		// elastic.bulk({body: commands, consistency: 'all'}, function (err) {
+		// 	if (err) {
+		// 		console.error('failed to bulk insert', user.email);
+		// 		return callback(err);
+		// 	}
+
+		// 	console.log('feed index sucessfully updated', user.email);
+		// 	callback(null);
+		// });
 	}
 }
 
@@ -239,6 +272,8 @@ function define(agenda) {
 			if (err) {
 				return callback(err);
 			}
+
+			console.log(results);
 
 			notifier('feed-indexing-completed', results, callback);
 		});
