@@ -4,6 +4,7 @@ var async = require('async');
 var config = require('../config');
 var db = require('./db')(config);
 var elastic = require('./elastic')(config);
+var timing = require('./utils/timing');
 
 var indexName = 'feeds', typeName = 'item';
 
@@ -72,6 +73,10 @@ var mappings = {
 };
 
 function indexFeed(callback) {
+	var users = 0, items = 0;
+
+	timing.start('user-feed-index');
+
 	ensureIndex(function (err) {
 		if (err) {
 			return callback(err);
@@ -127,7 +132,15 @@ function indexFeed(callback) {
 			return callback(err);
 		}
 
-		async.eachLimit(users, 16, retriveFeedAndIndex, callback);
+		async.eachLimit(users, 16, retriveFeedAndIndex, function (err, results) {
+			if (err) {
+				return callback(err);
+			}
+
+			var duration = timing.finish('user-feed-index').asSeconds();
+
+			callback(null, {users: users, items: items, duration: duration });
+		});
 	}
 
 	function retriveFeedAndIndex(user, callback) {
@@ -143,6 +156,9 @@ function indexFeed(callback) {
 				console.log('users feed is empty, nothing to index');
 				return callback(null);
 			}
+
+			users += 1;
+			items += items.length;
 
 			console.log('receieved ' + items.length + ' favorites');
 			indexItems(user, items, callback);

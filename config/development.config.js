@@ -12,6 +12,14 @@ var config = {
 
 	logentries: {
 		token: null
+	},
+
+	elastic: {
+		host: {
+			host: 'localhost'
+		},
+
+		requestTimeout: 10000
 	}
 };
 
