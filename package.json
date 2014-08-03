@@ -1,6 +1,6 @@
 {
   "name": "jobber",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Find and spread the best content for Likeastore users",
   "main": "app.js",
   "scripts": {
