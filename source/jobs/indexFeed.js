@@ -56,7 +56,20 @@ var mappings = {
 			},
 			'collection': {
 				'type': 'object',
-				'index': 'not_analyzed'
+				'properties': {
+					'title': {
+						'type': 'string',
+						'index': 'not_analyzed'
+					},
+					'description': {
+						'type': 'string',
+						'index': 'not_analyzed'
+					},
+					'owner': {
+						'type': 'object',
+						'index': 'not_analyzed'
+					}
+				}
 			}
 		}
 	}
