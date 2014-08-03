@@ -59,15 +59,15 @@ var mappings = {
 				'properties': {
 					'title': {
 						'type': 'string',
-						'index': 'not_analyzed'
+						'index': 'no'
 					},
 					'description': {
 						'type': 'string',
-						'index': 'not_analyzed'
+						'index': 'no'
 					},
 					'owner': {
 						'type': 'object',
-						'index': 'not_analyzed'
+						'index': 'no'
 					}
 				}
 			}
