@@ -20,10 +20,6 @@ agenda.purge(function () {
 	agenda.start();
 });
 
-// pulse(agenda);
-// mixpanel(agenda);
-// indexFeed(agenda);
-
 agenda.on('start', function (job) {
 	timing.start(job.attrs.name);
 	logger.info({message: 'job started', job: job.attrs.name });
